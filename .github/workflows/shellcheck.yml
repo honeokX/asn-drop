@@ -1,0 +1,32 @@
+---
+name: "Run shellcheck"
+
+on:
+  push:
+    branches: ["**"]
+    paths: ["**/*.sh"]
+  pull_request:
+    paths: ["**/*.sh"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: "Run shellcheck"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: "Run shellcheck"
+        uses: luizm/action-sh-checker@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHFMT_OPTS: -i 4 -sr
+        with:
+          sh_checker_only_diff: ${{ github.event_name == 'pull_request' }}

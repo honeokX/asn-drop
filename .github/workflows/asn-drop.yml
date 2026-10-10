@@ -1,0 +1,37 @@
+---
+name: "Asn drop"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "asn-drop.sh"
+  schedule:
+    - cron: "0 8 * * *"
+      timezone: Asia/Shanghai
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: "Asn drop"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v7
+
+      - name: "Sync asn drop"
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          bash -n asn-drop.sh
+          bash asn-drop.sh
